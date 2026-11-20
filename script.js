@@ -109,25 +109,77 @@
 
   $('#year').textContent = new Date().getFullYear();
 
-  /* Contact form (Formspree / Web3Forms ready) */
+  /* Contact form: validated in the browser, delivered to email by FormSubmit */
   var form = $('#contact-form'), status = $('#form-status');
+  var nameEl = $('#name'), emailEl = $('#email'), msgEl = $('#message');
+  var NAME_RE = /^\p{L}[\p{L}\s'.\-]{1,59}$/u;
+  var EMAIL_RE = /^[A-Za-z0-9._%+\-]+@[A-Za-z0-9](?:[A-Za-z0-9\-]*[A-Za-z0-9])?(?:\.[A-Za-z0-9](?:[A-Za-z0-9\-]*[A-Za-z0-9])?)*\.[A-Za-z]{2,}$/;
+
   function setStatus(m, t) { status.textContent = m; status.className = 'text-sm ' + (t || ''); }
+  function fieldError(el, msg) {
+    var err = el.parentNode.querySelector('.field-err');
+    if (!msg) { if (err) err.remove(); el.classList.remove('invalid'); el.removeAttribute('aria-invalid'); return; }
+    if (!err) { err = document.createElement('p'); err.className = 'field-err'; el.parentNode.appendChild(err); }
+    err.textContent = msg;
+    el.classList.add('invalid');
+    el.setAttribute('aria-invalid', 'true');
+  }
+  function checkName() {
+    var v = nameEl.value.trim();
+    if (!v) return 'Enter your name';
+    if (!NAME_RE.test(v)) return 'Use letters only, at least 2 characters';
+    return '';
+  }
+  function checkEmail() {
+    var v = emailEl.value.trim();
+    if (!v) return 'Enter your email address';
+    if (v.length > 254 || v.indexOf('..') !== -1 || /^\.|\.@/.test(v) || !EMAIL_RE.test(v)) return 'Enter a valid email address, like name@example.com';
+    return '';
+  }
+  function checkMsg() {
+    var v = msgEl.value.trim();
+    if (!v) return 'Write a message';
+    if (v.length < 10) return 'Write at least 10 characters';
+    return '';
+  }
+
+  /* Numbers and symbols cannot be typed into the name field */
+  nameEl.addEventListener('input', function () {
+    var cleaned = nameEl.value.replace(/[^\p{L}\s'.\-]/gu, '');
+    if (cleaned !== nameEl.value) nameEl.value = cleaned;
+    fieldError(nameEl, '');
+  });
+  emailEl.addEventListener('input', function () { fieldError(emailEl, ''); });
+  msgEl.addEventListener('input', function () { fieldError(msgEl, ''); });
+  nameEl.addEventListener('blur', function () { if (nameEl.value) fieldError(nameEl, checkName()); });
+  emailEl.addEventListener('blur', function () { if (emailEl.value) fieldError(emailEl, checkEmail()); });
+
   form.addEventListener('submit', function (e) {
     e.preventDefault();
-    var ok = true;
-    $$('[required]', form).forEach(function (f) {
-      var good = f.value.trim() !== '' && (f.type !== 'email' || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(f.value));
-      f.classList.toggle('invalid', !good);
-      if (!good) ok = false;
-    });
-    if (!ok) { setStatus('Add your name, a valid email and a message', 'err'); return; }
-    if (form.action.indexOf('YOUR_FORM_ID') !== -1) { setStatus('Form endpoint not set yet. Add your Formspree or Web3Forms URL in index.html', 'err'); return; }
+    var checks = [[nameEl, checkName()], [emailEl, checkEmail()], [msgEl, checkMsg()]];
+    var firstBad = null;
+    checks.forEach(function (c) { fieldError(c[0], c[1]); if (c[1] && !firstBad) firstBad = c[0]; });
+    if (firstBad) { setStatus('', ''); firstBad.focus(); return; }
+    if ($('[name="_honey"]', form).value) return;
+
+    var data = new FormData(form);
+    data.set('name', nameEl.value.trim());
+    data.set('email', emailEl.value.trim());
+    data.set('message', msgEl.value.trim());
+    data.append('_subject', 'Portfolio message from ' + nameEl.value.trim());
+    data.append('_template', 'table');
+
     var btn = $('button[type="submit"]', form);
     btn.disabled = true; setStatus('Sending', '');
-    fetch(form.action, { method: 'POST', body: new FormData(form), headers: { Accept: 'application/json' } })
-      .then(function (r) { if (!r.ok) throw new Error(); form.reset(); setStatus('Message sent', 'ok'); })
+    fetch(form.action, { method: 'POST', body: data, headers: { Accept: 'application/json' } })
+      .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { return { ok: r.ok, j: j }; }); })
+      .then(function (res) {
+        var success = res.ok && (res.j.success === true || res.j.success === 'true');
+        if (!success) throw new Error(res.j.message || 'failed');
+        form.reset();
+        setStatus('Message sent, I will reply by email', 'ok');
+      })
       .catch(function () { setStatus('Could not send, please email me directly', 'err'); })
       .then(function () { btn.disabled = false; });
   });
-  $$('.field', form).forEach(function (f) { f.addEventListener('input', function () { f.classList.remove('invalid'); }); });
 })();

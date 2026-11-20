@@ -253,13 +253,23 @@
             <li><a class="link-quiet" href="https://github.com/daiyankabir" target="_blank" rel="noopener noreferrer">github.com/daiyankabir</a></li>
           </ul>
         </div>
-        <!-- FORM: replace YOUR_FORM_ID with your Formspree ID, or use Web3Forms
-             (action https://api.web3forms.com/submit + a hidden access_key input). -->
-        <form id="contact-form" class="card grid gap-4" action="https://formspree.io/f/YOUR_FORM_ID" method="POST" novalidate>
-          <input type="text" name="_gotcha" class="hidden" tabindex="-1" autocomplete="off" aria-hidden="true" />
-          <div><label for="name" class="label">Name</label><input id="name" name="name" type="text" required autocomplete="name" class="field" /></div>
-          <div><label for="email" class="label">Email</label><input id="email" name="email" type="email" required autocomplete="email" class="field" /></div>
-          <div><label for="message" class="label">Message</label><textarea id="message" name="message" rows="5" required class="field"></textarea></div>
+        <!-- FORM: messages are emailed to kabirdaiyan@gmail.com through FormSubmit (no account needed).
+             After deploying, send one test message and click the activation link FormSubmit emails you, once.
+             To use Web3Forms or Formspree instead, change the action URL below. -->
+        <form id="contact-form" class="card grid gap-4" action="https://formsubmit.co/ajax/kabirdaiyan@gmail.com" method="POST" novalidate>
+          <input type="text" name="_honey" class="hidden" tabindex="-1" autocomplete="off" aria-hidden="true" />
+          <div>
+            <label for="name" class="label">Name</label>
+            <input id="name" name="name" type="text" required minlength="2" maxlength="60" autocomplete="name" class="field" />
+          </div>
+          <div>
+            <label for="email" class="label">Email</label>
+            <input id="email" name="email" type="email" required maxlength="254" autocomplete="email" inputmode="email" class="field" />
+          </div>
+          <div>
+            <label for="message" class="label">Message</label>
+            <textarea id="message" name="message" rows="5" required minlength="10" maxlength="2000" class="field"></textarea>
+          </div>
           <div class="flex flex-wrap items-center gap-4"><button type="submit" class="btn btn-primary">Send message</button><p id="form-status" class="text-sm" role="status" aria-live="polite"></p></div>
         </form>
       </div>

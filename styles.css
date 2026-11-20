@@ -104,6 +104,7 @@ body { overflow-x: hidden; }
 .field { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid rgb(var(--ink) / .12); background: rgb(var(--raised) / .5); color: rgb(var(--ink)); transition: border-color 150ms var(--ease), background-color 150ms var(--ease); }
 .field:focus { outline: none; border-color: rgb(var(--accent)); background: rgb(var(--raised)); }
 .field.invalid { border-color: rgb(var(--neg)); }
+.field-err { margin-top: 8px; font-size: 13px; line-height: 20px; color: rgb(var(--neg)); }
 #form-status.ok { color: rgb(var(--pos)); } #form-status.err { color: rgb(var(--neg)); }
 
 /* One entrance on load */
