@@ -55,9 +55,9 @@ body { overflow-x: hidden; }
 .bug:hover { background: rgb(var(--raised)); border-color: rgb(var(--ink) / .16); }
 .dot { flex: none; width: 8px; height: 8px; border-radius: 50%; background: rgb(var(--muted)); }
 .dot.critical { background: rgb(var(--neg)); } .dot.major { background: rgb(var(--warn)); } .dot.minor { background: rgb(var(--muted)); }
-.bug.fixed .dot { background: rgb(var(--pos)); }
+.bug.resolved .dot { background: rgb(var(--pos)); }
 .bug-title { flex: 1; font-size: 14px; line-height: 20px; }
-.bug.fixed .bug-title { color: rgb(var(--muted)); text-decoration: line-through; }
+.bug.resolved .bug-title { color: rgb(var(--muted)); text-decoration: line-through; }
 .bug-sev { flex: none; width: 56px; text-align: right; }
 .ring-bg { fill: none; stroke: rgb(var(--ink) / .1); stroke-width: 8; }
 .ring-fill { fill: none; stroke: rgb(var(--neg)); stroke-width: 8; stroke-linecap: round; stroke-dasharray: 263.9; stroke-dashoffset: 263.9; transition: stroke-dashoffset 400ms var(--ease), stroke 400ms var(--ease); }

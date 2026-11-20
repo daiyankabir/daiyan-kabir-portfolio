@@ -72,7 +72,7 @@
       var li = document.createElement('li');
       var btn = document.createElement('button');
       btn.type = 'button';
-      btn.className = 'bug' + (b.fixed ? ' fixed' : '');
+      btn.className = 'bug' + (b.fixed ? ' resolved' : '');
       btn.setAttribute('aria-pressed', String(!!b.fixed));
       btn.innerHTML = '<span class="dot ' + b.s + '"></span><span class="bug-title"></span><span class="meta bug-sev">' + (b.fixed ? 'fixed' : b.s) + '</span>';
       btn.querySelector('.bug-title').textContent = b.t;
